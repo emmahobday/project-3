@@ -595,10 +595,22 @@ handleSubmit(event) {
   }
 ```
 
-As we've just seen, if the request is successful, the response will includes the JSON Web Token which is set in local storage using the setToken function in the auth.js file. The user's name is also set so that it can be displayed in the navbar.
+As we've just seen, if the request is successful, the response will includes the JSON Web Token which is set in local storage using the setToken function in the `auth.js` file. The user's name is also set so that it can be displayed in the navbar.
 
 
 `function setToken(token) { localStorage.setItem('token', token) }`
+
+We created other functions to allow us to interact with the web token:
+
+```
+function getToken() {
+  return localStorage.getItem('token')
+}
+
+function isLoggedIn() {
+  return !!localStorage.getItem('token')
+}
+```
 
 <a name="logout"></a>
 ### Log Out
