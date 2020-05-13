@@ -786,14 +786,10 @@ function createNewRestaurant(req, res) {
 <a name="favourites"></a>
 ### Favourites
 
-Logged-in users can add restaurants to their 'favourites' using a button on the single restaurant's page. They can view their favourited restaurants through a link on the navbar:
+On the front-end, logged-in users can click on the 'favourite' button on a single restaurant's page to add a restaurant to their favourites. Clicking it again removes it from favourites. This is made visually clear to the user by filling in the star when currently a favourite:
 
-![Favourites](images/screenshots/favourites.png)
-
-On the front-end, users can click on the 'favourite' button to add a restaurant to their favourites. Clicking it again removes it from favourites. This is made visually clear to the user by filling in the star when currently a favourite:
-
-![Favourited](images/screenshots/faveon.jpg)
-![Unfavourited](images/screenshots/faveoff.jpg)
+![Favourited](images/screenshots/fave-on.jpg)
+![Unfavourited](images/screenshots/fave-off.jpg)
 
 The favourite button is a separate component within the 'SingleRestaurant' component:
 
@@ -849,7 +845,9 @@ Now, when the button is clicked, the function `handleFavouriteButton()` is calle
 
 This updates the state `isFavourited` so will update what is seen on the page.
 
-On the backend, we wrote two routes in the `router.js` and two functions in our `userController.js`: favourite and unfavourite.
+On the backend, the User schema has a field `favourites: [{ type: mongoose.Schema.ObjectId, ref: 'Restaurant', required: false }]`. This is an array that contains restaurantIds with a reference relationship to the Restaurant model. 
+
+We wrote two routes in the `router.js` and two functions in our `userController.js`: favourite and unfavourite add/remove restaurants to this field.
 
 The function `favourite()` adds the restaurantId to the array field 'favourites' on the current user in MongoDB, and sends a status code 200 back. The unfavourite function is very similar, but removes the restaurant from the array using `user.favourites.pull(req.body.restaurantId)`.
 
@@ -869,9 +867,13 @@ function favourite(req, res) {
 }
 
 ```
+A logged-in user can view their favourite restaurants through a link on the navbar:
 
+![Favourites](images/screenshots/favourites.png)
 
-A user can view their favourite restaurants.
+This component makes a GET request to the **/favourites** route of our API and sets the returned array in state. The component maps over this array when it renders the page and displays the restaurants using Bulma cards, just as the main Restaurants component does. If a user has not yet favourited any results, a message is displayed instead: `    if (!this.state.favouritedRestos) return 'Favourite some restaurants!'
+`
+On the backend, a GET request to the **/favourites** route calls the function `getFavourites()` in the `userController.js`. 
 
 ```
 function getFavourites(req, res) {
@@ -887,8 +889,8 @@ function getFavourites(req, res) {
 }
 ```
 
+We used the Mongoose method `populate()` to send the full restaurant data back to the front-end - not just an array of restaurantIds. This means that the front-end can render the results immediately, without having to make further requests for the data for each restaurantId.
 
-Talk about User/favourite
 
 <a name="challenges"></a>
 ### Challenges
