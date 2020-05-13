@@ -786,9 +786,109 @@ function createNewRestaurant(req, res) {
 <a name="favourites"></a>
 ### Favourites
 
+Logged-in users can add restaurants to their 'favourites' using a button on the single restaurant's page. They can view their favourited restaurants through a link on the navbar:
+
 ![Favourites](images/screenshots/favourites.png)
 
-FINISH TOMORROW
+On the front-end, users can click on the 'favourite' button to add a restaurant to their favourites. Clicking it again removes it from favourites. This is made visually clear to the user by filling in the star when currently a favourite:
+
+![Favourited](images/screenshots/faveon.jpg)
+![Unfavourited](images/screenshots/faveoff.jpg)
+
+The favourite button is a separate component within the 'SingleRestaurant' component:
+
+`<FavouriteButton restaurantId={id} isFavourited={this.state.isFavourited} />`
+
+When it initially loads, the component checks whether this restaurant is favourited by this user by sending an API request, and sets this as a boolean in state. The restaurant ID is accessed through props:
+
+```
+  componentDidMount() {
+    const isLoggedIn = auth.isLoggedIn()
+    isLoggedIn && axios.get('/api/profile',
+      { headers: { Authorization: `Bearer ${auth.getToken()}` } }
+    )
+      .then(resp => {
+        const favedRestoArray = resp.data.favourites
+        if (favedRestoArray.includes(this.props.restaurantId)) {
+          this.setState({ isFavourited: true })
+        } else {
+          this.setState({ isFavourited: false })
+        }
+      })
+  }
+```
+
+The page renders the button (filled-in star if favourited, empty star if not) according to this:
+
+```
+  render() {
+    return <button className="button is-normal" onClick={(event) => this.handleFavouriteButton(event)}>
+      <FontAwesomeIcon icon={this.state.isFavourited ? faStar : faStarEmpty} />
+      {'Favourite'}
+    </button>
+  }
+```
+
+Now, when the button is clicked, the function `handleFavouriteButton()` is called. This function checks whether the restaurant is currently favourited, then makes a PUT request to either favourite or unfavourite it:
+
+```
+    if (!this.state.isFavourited) {
+      axios.put('/api/restaurant/favourite',
+        { restaurantId },
+        { headers: { Authorization: `Bearer ${auth.getToken()}` } })
+        .then(() => this.setState({ isFavourited: true }))
+        .catch(err => console.log(err))
+    } else {
+      axios.put('/api/restaurant/unfavourite',
+        { restaurantId },
+        { headers: { Authorization: `Bearer ${auth.getToken()}` } })
+        .then(() => this.setState({ isFavourited: false }))
+        .catch(err => console.log(err))
+    }
+```
+
+This updates the state `isFavourited` so will update what is seen on the page.
+
+On the backend, we wrote two routes in the `router.js` and two functions in our `userController.js`: favourite and unfavourite.
+
+The function `favourite()` adds the restaurantId to the array field 'favourites' on the current user in MongoDB, and sends a status code 200 back. The unfavourite function is very similar, but removes the restaurant from the array using `user.favourites.pull(req.body.restaurantId)`.
+
+```
+function favourite(req, res) {
+  const user = req.currentUser
+  User
+    .findOne(user)
+    .then(user => {
+      user.favourites.push(req.body.restaurantId) 
+      return user.save()
+    })
+    .then((user) => {
+      res.status(200).send({ message: 'added restaurant to user favourites field/array' })
+    })
+    .catch(error => res.send({ errors: error.errors }))
+}
+
+```
+
+
+A user can view their favourite restaurants.
+
+```
+function getFavourites(req, res) {
+  const user = req.currentUser
+  User
+    .findOne(user)
+    .populate('favourites').exec()
+    .then(user => {
+      console.log(user)
+      res.status(200).send(user.favourites)
+    })
+    .catch(err => console.log(err))
+}
+```
+
+
+Talk about User/favourite
 
 <a name="challenges"></a>
 ### Challenges
