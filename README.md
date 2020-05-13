@@ -219,8 +219,6 @@ router.route('/restaurant/:id/email')
   .get(secureRoute, restaurantController.emailRestaurantInfo)
 ```
 
-I'll explain how we used `secureRoute` in the User Authentication section - as this feature is only available to logged in users.
-
 We used MailJet to create and send the email. We created an account to get the necessary API keys and stored them in the `.env` file. The user's email is retrieved from their user profile using ``"Email": `${currentUser.email}`,
                   "Name": `${currentUser.username}`
                 }``
@@ -432,10 +430,6 @@ if (event.target.value === 'Search All') {
 
 <a name="auth"></a>
 ## User Authentication
-
-## Secure routes
-We used secure routes to make certain features only available to logged-in users.
-ADD MORE HERE.
 
 <a name="register"></a>
 ## Register
