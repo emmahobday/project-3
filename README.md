@@ -432,6 +432,11 @@ if (event.target.value === 'Search All') {
 
 <a name="auth"></a>
 ## User Authentication
+
+## Secure routes
+We used secure routes to make certain features only available to logged-in users.
+ADD MORE HERE.
+
 <a name="register"></a>
 ## Register
 
@@ -618,9 +623,66 @@ Once logged in, the navbar will display a 'logout' option in a dropdown beneath 
 
 `function logout() { localStorage.removeItem('token') }`
 
-ADD MORE HERE
-issue with token expiring but it still looks like you're logged n at the front end, because there is a token (this is what is checked), it's just not valid any more!
+A logged-in user's token lasts for 6 hours - once the six hours are up, they should be automatically logged out. We encountered a problem whereby a user's token had expired, but the views on the front-end remained those of a logged in user, although any API requests were rightly being rejected. This was because our front-end routes were just checking whether a token was present in local storage, and there certainly was - expired, yes, but still there! 
 
+Our solution was to write a backend function in our `auth.js` to check whether a user is authenticated - i.e. has a valid token.
+
+```
+   function getToken() {
+     return localStorage.getItem('token')
+   }
+
+   function getPayload() {
+     const token = this.getToken() 
+     if (!token) return false
+     const parts = token.split('.')
+     if (parts.length < 3) return false
+     return JSON.parse(atob(parts[1]))
+   }
+
+   function isAuthenticated() {
+     const payload = this.getPayload()
+     if (!payload) return false
+     const now = Math.round(Date.now() / 1000)
+     return now < payload.exp  
+   }
+```
+
+The function `getPayload()` retrieves the user's token using `getToken()` then splits it at the `.`, and returns just the middle part (the payload) using the atob method to decode the string.
+
+The function `isAuthenticated()` takes this decoded payload and returns `true` if the expiration time is greater than the current time (i.e. it expires at a later time than now), and `false` if the opposite is true. It also returns `false` if no payload exists, which will be the case if a user has not logged in as they won't have a token.
+
+We now needed to make this check every time a component loads, and log a user out if they are not authenticated. The most efficient way we found of doing this was to update our front-end router. We created our own `SecureRoute` and `CustomRoute` components and used these instead of `<Route/>` in our `<BrowserRouter/>`.
+
+
+* `SecureRoute` was used for paths that require a user to be logged in:
+
+```
+import { Route, Redirect } from 'react-router-dom'
+import Auth from '../lib/auth'
+
+const SecureRoute = (props) => {
+  if (Auth.isAuthenticated()) return <Route {...props} />
+  Auth.logout()
+  return <Redirect to="/login" />
+}
+```
+
+If `isAuthenticated()` returns true, it returns a React Route.
+If `isAuthenticated()` returns false, it logs the user out and redirects them to the login page.
+
+* `CustomRoute` was used for paths that anyone can access:
+
+```
+import { Route } from 'react-router-dom'
+import Auth from '../lib/auth'
+const CustomRoute = (props) => {
+  if (!Auth.isAuthenticated()) Auth.logout()
+  return <Route {...props} />
+}
+```
+If `isAuthenticated()` returns false, it logs the user out first.
+A React Route is then returned for all users.
 
 <a name="changepw"></a>
 ### Changing your password
