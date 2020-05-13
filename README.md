@@ -11,7 +11,7 @@ Food for Thought is an app which helps users discover new, exciting restaurants 
 
 We worked as a team of four on this project. We came up with the plan for the design and functionality of the app together. Each day we held a team stand-up to discuss the project. We each worked on some features individually, and also did some pair programming. We all collaborated throughout each day with problem-solving and debugging each others' code.
 
-We built a MongoDB database of restaurant information, and served this data using Express. We used JWT Auth to allow users to create accounts, log-in and change their password. On the front-end, built with React, users can browse, search and filter restaurants. Users can add restaurants to their 'favourites' list, add new restaurants to the database, and make comments on a restaurant's page.
+We built a MongoDB database of restaurant information, and served this data using Express. We used JWT Auth to allow users to create accounts, log-in and change their password. On the front-end, built with React, users can browse, search and filter restaurants. Users can add restaurants to their 'favourites' list, email restaurant information to themselves, and add new restaurants to the database.
 
 ## Table of contents
 
@@ -59,8 +59,6 @@ We built a MongoDB database of restaurant information, and served this data usin
 * Postcode.io API
 * Node MailJet
 * Mongo and Mongoose
-* Multer, GridFs
-* Moment
 * Git and GitHub
 * Bulma
 * Google Fonts
@@ -792,40 +790,29 @@ function createNewRestaurant(req, res) {
 
 FINISH TOMORROW
 
-
-POSSIBLE SECTIONS
-### Comments
-### Rate comments
-### Adding images
-
-When  user adds a restaurant, must provide an image URL for the banner photo. In addition, they can upload their own photos.
-
-We did this using...
-
 <a name="challenges"></a>
 ### Challenges
-- authentication - great learning opportunity. change password took ages to work properly - not an exciting flashy feature but really proud of it
 
-- working at home because of covid - but we managed to collaborate with git really well . learned loads about merging changes etc
+-  I found the most challenging part to be user authentication as this was a pretty new piece of learning for me. Login and register were fairly straightforward to design, but the change password took quite a long time to get working properly. I'm really proud of this feature, even though it isn't a particularly exciting or flashy feature for a website to have - I learned so much by building this function (both frontend and backend).
+
+- Collaborating with git, working on our own branches and then merging changes on a shared development branch was all brand-new, and was particularly important because we completed this project in March/April 2020 during Covid-19 lockdown. Working at home had it's own challenges, but we became really good at working collaboratively during this project!
 
 <a name="learning"></a>
 ### Lessons Learned
-authentication and validation - esp through doing the 'change password' function
 
-first time building backend - learned loads about how to set up a backend and frontend in the most useful ways - e.g. you can return error messages in the format you want, making it straightforward for the front end to pick them up
+- I learned a lot about authentication and validation - especially through doing the 'change password' function
 
-documentation - using the documentation for external libraries was key. developed confidence in using new applications and being able to figure them out alone. 
+- This was my first time building a backend from scratch, and I learned loads about how to set up a backend and frontend in the most useful ways. I found this part quite satisfying - having previously worked with external APIs only, I'd become used to dedicating time on examining how each API returns data and any status codes/messages and having to work the front-end around this. Having control over the backend meant we could return error messages in the format we wanted, which was really satisfying.
 
-css - set up classes that will be used over and over to make it more efficient!
+- Using the documentation for external libraries was key. We used a few different libraries, and I developed confidence in using new applications and being able to figure them out alone. 
 
+- We had sketched out our design for each page, but didn't make decisions on colour schemes/fonts/etc until the end of the project, which really transformed the look of our site. We had used Bulma and some CSS styling throughout the entire project, and with four people working together on different components, the CSS file ended up becoming quite long, despite our best attempts to keep it organised. Our strategy had been to group CSS for each component together (e.g. all navbar styling together). Next time, I think we could be more efficient by setting up some whole-site CSS classes for headings, text, etc which can be applied to elements on any page,  so we don't end up repeating ourselves in different sections.
 
 <a name="future"></a>
 ### Future development ideas
 
-- adding advanced search functionality - e.g. distance by comparing postcodes to yours, being able to select alcohol etc
+- Adding advanced search functionality - e.g. search by distance by comparing postcodes to yours, being able to filter by vegetarian/halal/etc etc
 
-- you can upload photos when you submit a restaurant - would be nice to be able to add these at any time
+- Rating system for restaurants - used could rate a restaurant out of five stars, and an average rating displayed, and used to search/filter restaurants 
 
-- rating system for restaurants 
-
-- recommendation system for restaurants based on your favourites
+- A recommendation system for restaurants based on your favourites - for example, if you like a significant number of Japanese restaurants, ££££ restaurants, restaurants in a particular postcode area, an algorithm could suggest similar restaurants.
